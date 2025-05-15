@@ -241,9 +241,10 @@
                             <span th:text="'Invoice ID: #' + ${invoiceMap.invoice.id}"></span>
                             <span class="invoice-type" th:text="${invoiceMap.invoice.type}">Type</span>
                         </div>
-                        <p><strong th:text="${invoiceMap.invoice.type == 'PURCHASE' ? 'Vendor' : 'Customer'} + ':'"></strong>
-                            <span th:text="${invoiceMap.invoice.type == 'PURCHASE' ? invoiceMap.invoice.vendor.name : invoiceMap.invoice.user.name}"></span>
-                        </p>
+						<p>
+						  <strong th:text="${invoiceMap.invoice.type == 'PURCHASE' ? 'Vendor:' : 'Customer:'}"></strong>
+						  <span th:text="${invoiceMap.entityName}"></span>
+						</p> 
                         <p><strong>Date:</strong> <span th:text="${invoiceMap.formattedDate}"></span></p>
                         <table>
                             <thead>

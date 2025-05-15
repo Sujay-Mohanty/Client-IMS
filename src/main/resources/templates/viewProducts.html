@@ -228,7 +228,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="product : ${products}">
-                                <form th:action="@{'/products/update/' + ${product.id}}" method="post">
+                                <form th:action="@{'/admin/products/update/' + ${product.id}}" method="post">
                                     <td>
                                         <input type="text" name="name" th:value="${product.name}" required />
                                     </td>
