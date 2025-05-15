@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #1a472a 0%, #2e7d32 100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 20;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 256px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .main-content {
+            background: #f5f5f5;
+            min-height: 100vh;
+            margin-left: 256px;
+            position: relative;
+            z-index: 10;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            margin-left: 256px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 256px);
+            z-index: 15;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a472a;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .user-avatar {
+            background-color: #1a472a;
+            color: #fff;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"%3E%3Cpath fill="%23e5e7eb" fill-opacity="0.4" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"/%3E%3C/svg%3E');
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #1a472a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #1a472a;
+            color: white;
+            font-weight: 600;
+            border-right: 1px solid #ddd;
+        }
+        th:last-child {
+            border-right: none;
+        }
+        td {
+            color: #555;
+            font-size: 15px;
+        }
+        tr {
+            transition: background-color 0.3s ease;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        .edit-btn {
+            padding: 8px 16px;
+            background: linear-gradient(90deg, #1a472a 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        .edit-btn:hover {
+            background: linear-gradient(90deg, #14532d 0%, #1b5e20 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1a472a;
+            box-shadow: 0 0 0 3px rgba(26, 71, 42, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .divider {
+            border-top: 1px solid #ffffff;
+            margin: 1rem 0;
+        }
+        .stat-icon {
+            color: #1a472a;
+            font-size: 1.5rem;
+        }
+        .logo-icon {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .sidebar-text {
+            color: #ffffff;
+        }
+        .active {
+            background-color: #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="flex">
+        <div class="sidebar w-64 text-white p-6 shadow-lg">
+            <div class="flex items-center mb-8">
+                <span class="logo-icon">📦</span>
+				<h1 class="text-4xl font-semibold text-[#ffffff]">boîte</h1>
+            </div>
+            <nav class="space-y-4">
+                <a href="/admin/adminHome" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">📊</span>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/admin/purchase" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">💵</span>
+                    <span class="sidebar-text">Make Purchase</span>
+                </a>
+                <a href="/admin/products" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors active">
+                    <span class="mr-3 stat-icon">📦</span>
+                    <span class="sidebar-text">View All Products</span>
+                </a>
+                <a href="/admin/invoices" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">📜</span>
+                    <span class="sidebar-text">View Invoices</span>
+                </a>
+                <a href="/admin/vendor" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">👥</span>
+                    <span class="sidebar-text">Vendors</span>
+                </a>
+                <div class="divider"></div>
+                <a href="/logout" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">🚪</span>
+                    <span class="sidebar-text">Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="app-name">View All Products</div>
+            <div class="user-info">
+                <span>Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 p-8 pt-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="container">
+                    <h1>Product List</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="product : ${products}">
+                                <form th:action="@{'/products/update/' + ${product.id}}" method="post">
+                                    <td>
+                                        <input type="text" name="name" th:value="${product.name}" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="description" th:value="${product.description}" required />
+                                    </td>
+                                    <td th:text="${product.quantity}">Qty</td>
+                                    <td th:text="${product.price}">Price</td>
+                                    <td>
+                                        <button type="submit" class="edit-btn">Save</button>
+                                    </td>
+                                </form>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

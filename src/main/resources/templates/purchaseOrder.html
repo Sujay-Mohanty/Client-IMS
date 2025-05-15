@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Purchase Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #1a472a 0%, #2e7d32 100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 20;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 256px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .main-content {
+            background: #f5f5f5;
+            min-height: 100vh;
+            margin-left: 256px;
+            position: relative;
+            z-index: 10;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            margin-left: 256px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 256px);
+            z-index: 15;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a472a;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .user-avatar {
+            background-color: #1a472a;
+            color: #fff;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"%3E%3Cpath fill="%23e5e7eb" fill-opacity="0.4" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"/%3E%3C/svg%3E');
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #1a472a;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            background-color: #1a472a;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -40px -40px 20px -40px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .divider {
+            border-top: 1px solid #e5e7eb;
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        select,
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"%3E%3Cpath fill="%231a472a" d="M2 4l4 4 4-4H2z"/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            padding-right: 36px;
+            height: 48px;
+        }
+        select:focus,
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="datetime-local"]:focus {
+            outline: none;
+            border-color: #1a472a;
+            box-shadow: 0 0 0 3px rgba(26, 71, 42, 0.1);
+        }
+        select option[disabled] {
+            color: #999;
+        }
+        select option:not([disabled]):hover {
+            background-color: #e6f4ea;
+        }
+        .readonly-fields {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .readonly-fields input {
+            background-color: #f1f5f9;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            color: #2e7d32;
+        }
+        button {
+            margin-top: 100px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #1a472a 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background: linear-gradient(90deg, #14532d 0%, #1b5e20 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+        .sidebar-divider {
+            border-top: 1px solid #ffffff;
+            margin: 1rem 0;
+        }
+        .stat-icon {
+            color: #1a472a;
+            font-size: 1.5rem;
+        }
+        .logo-icon {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .sidebar-text {
+            color: #ffffff;
+        }
+        .active {
+            background-color: #48bb78;
+        }
+		.purchase-btn {
+		    font-size: 18px;
+		    padding: 14px 28px;
+		    margin: 30px auto;
+		    display: block;
+		    background-color: #1a472a;
+		    color: white;
+		    border: none;
+		    border-radius: 8px;
+		    cursor: pointer;
+		    transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+		.purchase-btn:hover {
+		    background-color: #145c34;
+		    transform: translateY(-2px);
+		}
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="flex">
+        <div class="sidebar w-64 text-white p-6 shadow-lg">
+            <div class="flex items-center mb-8">
+                <span class="logo-icon">📦</span>
+                <h1 class="text-4xl font-semibold text-[#ffffff]">boîte</h1>
+            </div>
+            <nav class="space-y-4">
+                <a href="/admin/adminHome" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">📊</span>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+                <a href="/admin/purchase" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors active">
+                    <span class="mr-3 stat-icon">💵</span>
+                    <span class="sidebar-text">Make Purchase</span>
+                </a>
+                <a href="/admin/products" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">📦</span>
+                    <span class="sidebar-text">View All Products</span>
+                </a>
+                <a href="/admin/invoices" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">📜</span>
+                    <span class="sidebar-text">View Invoices</span>
+                </a>
+                <a href="/admin/vendor" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">👥</span>
+                    <span class="sidebar-text">Vendors</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <a href="/logout" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
+                    <span class="mr-3 stat-icon">🚪</span>
+                    <span class="sidebar-text">Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="app-name">Make Purchase</div>
+            <div class="user-info">
+                <span>Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 p-8 pt-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="container">
+                    <div class="card-header">Create Purchase Order</div>
+                    <form th:action="@{/admin/purchase/add}" method="post">
+                        <label for="vendor">Select Vendor</label>
+                        <select id="vendor" name="vendorId" onchange="updateProductFields()" required>
+                            <option value="" disabled selected>-- Choose Vendor --</option>
+                            <option th:each="vendor : ${vendors}" 
+                                    th:value="${vendor.id}" 
+                                    th:attr="data-productname=${vendor.product.name}, data-productdesc=${vendor.product.description}"
+                                    th:text="${vendor.name}">
+                            </option>
+                        </select>
+                        <div class="divider"></div>
+                        <div class="readonly-fields">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" readonly>
+                            <label for="productDesc">Product Description</label>
+                            <input type="text" id="productDesc" name="productDesc" readonly>
+                        </div>
+                        <div class="divider"></div>
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" min="1" required>
+                        <label for="price">Unit Price</label>
+                        <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        <button type="submit" class="purchase-btn">Create Purchase Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("vendor").addEventListener("change", updateProductFields);
+        });
+
+        function updateProductFields() {
+            const select = document.getElementById("vendor");
+            const selectedOption = select.options[select.selectedIndex];
+            document.getElementById("productName").value = selectedOption.getAttribute("data-productname") || '';
+            document.getElementById("productDesc").value = selectedOption.getAttribute("data-productdesc") || '';
+        }
+    </script>
+</body>
+</html>
