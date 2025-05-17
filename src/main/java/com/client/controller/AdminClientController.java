@@ -171,7 +171,7 @@ public class AdminClientController {
             redirectAttributes.addFlashAttribute("error", "Failed to submit purchase order.");
         }
 
-        return "redirect:/admin/home";
+        return "redirect:/admin/adminHome";
     }
     
     // Products
@@ -212,30 +212,50 @@ public class AdminClientController {
     }
     
     @GetMapping("/invoices")
-    public String getInvoices(Model model) {
+    public String getAllInvoices(Model model) {
+        return fetchAndLoadInvoices(model, "all");
+    }
+
+    @GetMapping("/invoices/sales")
+    public String getSalesInvoices(Model model) {
+        return fetchAndLoadInvoices(model, "SALES");
+    }
+
+    @GetMapping("/invoices/purchase")
+    public String getPurchaseInvoices(Model model) {
+        return fetchAndLoadInvoices(model, "PURCHASE");
+    }
+
+    private String fetchAndLoadInvoices(Model model, String type) {
         String url = apiBaseUrl + "/invoices";
 
-        // You can add headers if needed
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-        // Use exchange with ParameterizedTypeReference because it's List<Map<String,Object>>
         ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 requestEntity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                }
         );
 
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            model.addAttribute("invoiceData", response.getBody());
-        } else {
-            model.addAttribute("invoiceData", Collections.emptyList());
+        List<Map<String, Object>> allInvoices = response.getStatusCode().is2xxSuccessful() && response.getBody() != null
+                ? response.getBody()
+                : Collections.emptyList();
+
+        if (!"all".equalsIgnoreCase(type)) {
+            allInvoices = allInvoices.stream()
+                    .filter(map -> {
+                        Map<String, Object> invoice = (Map<String, Object>) map.get("invoice");
+                        return type.equalsIgnoreCase((String) invoice.get("type"));
+                    }).toList();
         }
 
-        // Return your thymeleaf view name
-        return "viewInvoices"; 
+        model.addAttribute("invoiceData", allInvoices);
+        model.addAttribute("activeFilter", type);
+        return "viewInvoices";
     }
 
 }

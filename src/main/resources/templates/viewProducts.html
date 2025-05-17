@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Products</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>View Products - Cornucopia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -15,7 +14,7 @@
             overflow-x: hidden;
         }
         .sidebar {
-            background: linear-gradient(180deg, #1a472a 0%, #2e7d32 100%);
+            background: #2e7d32;
             transition: transform 0.3s ease-in-out;
             z-index: 20;
             position: fixed;
@@ -24,19 +23,84 @@
             height: 100vh;
             width: 256px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .main-content {
-            background: #f5f5f5;
-            min-height: 100vh;
-            margin-left: 256px;
-            position: relative;
-            z-index: 10;
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            margin-top: 0.5rem;
+        }
+        .cornucopia-logo {
+            width: 38px;
+            height: 38px;
+            margin-right: 0.7rem;
+        }
+        .app-title {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .nav-section {
+            flex: 1;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-radius: 0.5rem;
+            color: #e6ffe6;
+            text-decoration: none;
+            font-size: 1.07rem;
+            margin-bottom: 0.2rem;
+            transition: background 0.15s, color 0.15s;
+        }
+        .nav-link:hover {
+            background: #1b5e20;
+            color: #fff;
+        }
+        .nav-link .nav-icon {
+            margin-right: 0.8rem;
+            font-size: 1.5rem;
+        }
+        .nav-link.active {
+            background: #124d2b;
+            color: #fff;
+            font-weight: 700;
+        }
+        .divider {
+            border-top: 1px solid #ffffff55;
+            margin: 1.5rem 0 1rem 0;
+        }
+        .logout-link {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-radius: 0.5rem;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.07rem;
+            margin-bottom: 0.2rem;
+            background: #17643a;
+            transition: background 0.15s, color 0.15s;
+        }
+        .logout-link:hover {
+            background: #ba1b1b;
+            color: #fff;
+        }
+        .logout-link .nav-icon {
+            margin-right: 0.8rem;
+            font-size: 1.5rem;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 1.3rem 2.5rem;
             background-color: #ffffff;
             margin-left: 256px;
             position: fixed;
@@ -46,82 +110,172 @@
             z-index: 15;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
-        .app-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1a472a;
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #17643a;
+            letter-spacing: 1px;
         }
         .user-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.7rem;
         }
         .user-avatar {
-            background-color: #1a472a;
+            background-color: #17643a;
             color: #fff;
             border-radius: 50%;
-            width: 2rem;
-            height: 2rem;
+            width: 2.2rem;
+            height: 2.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.875rem;
+            font-size: 1rem;
             font-weight: 600;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px;
-            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"%3E%3Cpath fill="%23e5e7eb" fill-opacity="0.4" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"/%3E%3C/svg%3E');
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid #1a472a;
+        .main-content {
+            background: #f5f5f5;
+            min-height: 100vh;
+            margin-left: 256px;
+            position: relative;
+            z-index: 10;
+            padding: 0 2.5rem 2.5rem 2.5rem;
+            padding-top: 6.5rem;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .welcome-header {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #17643a;
+            margin-bottom: 0.2rem;
+            text-align: center;
         }
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .welcome-sub {
+            color: #4caf50;
+            font-size: 1.13rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
-        th {
-            background-color: #1a472a;
-            color: white;
-            font-weight: 600;
-            border-right: 1px solid #ddd;
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
-        th:last-child {
-            border-right: none;
+        .product-card {
+            background-color: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 6px 24px rgba(34, 197, 94, 0.08);
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: box-shadow 0.2s, transform 0.2s;
+            min-height: 260px;
         }
-        td {
-            color: #555;
-            font-size: 15px;
+        .product-card:hover {
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.16);
+            transform: translateY(-4px) scale(1.025);
         }
-        tr {
-            transition: background-color 0.3s ease;
+        .product-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
         }
-        tr:hover {
-            background-color: #f1f5f9;
+        .product-icon {
+            background: #e6f4ea;
+            color: #17643a;
+            border-radius: 0.7rem;
+            width: 2.8rem;
+            height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
         }
-        .edit-btn {
-            padding: 8px 16px;
-            background: linear-gradient(90deg, #1a472a 0%, #2e7d32 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
+        .product-name {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #17643a;
+        }
+        .product-desc {
+            color: #17643a;
+            font-size: 1.1rem !important;
+            margin-bottom: 1.1rem;
+			font-weight: 600;
+        }
+        .product-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            margin-bottom: 1.1rem;
+        }
+        .product-label {
+            font-size: 0.97rem;
+            color: #5a7e6b;
             font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
-        .edit-btn:hover {
-            background: linear-gradient(90deg, #14532d 0%, #1b5e20 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        .product-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #17643a;
+        }
+        .product-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+        }
+        .action-btn {
+            padding: 0.7rem 1.2rem;
+            background: #17643a;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: background 0.18s;
+        }
+        .action-btn:disabled,
+        .action-btn[disabled] {
+            background: #bdbdbd;
+            cursor: not-allowed;
+        }
+        .action-btn.edit {
+            background: #388e3c;
+        }
+        .action-btn.save {
+            background: #124d2b;
+        }
+        .stock-flag {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            padding: 0.4rem 1rem;
+            border-radius: 1.2rem;
+            font-size: 0.93rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .flag-low {
+            background: #fffde7;
+            color: #fbc02d;
+            border: 1px solid #ffe082;
+        }
+        .flag-critical {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .flag-out {
+            background: #ececec;
+            color: #616161;
+            border: 1px solid #bdbdbd;
+        }
+        .flag-normal {
+            background: #e8f5e9;
+            color: #388e3c;
+            border: 1px solid #a5d6a7;
         }
         input[type="text"] {
             width: 100%;
@@ -129,122 +283,179 @@
             border: 1px solid #d1d5db;
             border-radius: 6px;
             background-color: #f9fafb;
-            font-size: 14px;
+            font-size: 15px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            color: #17643a;
         }
         input[type="text"]:focus {
             outline: none;
             border-color: #1a472a;
             box-shadow: 0 0 0 3px rgba(26, 71, 42, 0.1);
         }
-        h1 {
-            text-align: center;
-            color: #2e7d32;
-            margin-bottom: 30px;
-            font-size: 32px;
-            font-weight: 800;
+        @media (max-width: 1100px) {
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
-        .divider {
-            border-top: 1px solid #ffffff;
-            margin: 1rem 0;
-        }
-        .stat-icon {
-            color: #1a472a;
-            font-size: 1.5rem;
-        }
-        .logo-icon {
-            color: #ffffff;
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
-        }
-        .sidebar-text {
-            color: #ffffff;
-        }
-        .active {
-            background-color: #48bb78;
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 0.5rem;
+                margin-left: 0;
+                width: 100%;
+            }
+            .header {
+                margin-left: 0;
+                width: 100%;
+            }
+            .sidebar {
+                display: none;
+            }
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+    <script>
+        // Simple JS for card edit/save toggle
+        function enableEdit(productId) {
+            document.querySelector(`#name-${productId}`).removeAttribute('readonly');
+            document.querySelector(`#desc-${productId}`).removeAttribute('readonly');
+            document.querySelector(`#edit-btn-${productId}`).style.display = 'none';
+            document.querySelector(`#save-btn-${productId}`).style.display = '';
+        }
+        function disableEdit(productId) {
+            document.querySelector(`#name-${productId}`).setAttribute('readonly', true);
+            document.querySelector(`#desc-${productId}`).setAttribute('readonly', true);
+            document.querySelector(`#edit-btn-${productId}`).style.display = '';
+            document.querySelector(`#save-btn-${productId}`).style.display = 'none';
+        }
+        // Optionally, after save, you can call disableEdit(productId) via form submit callback.
+    </script>
 </head>
 <body>
     <!-- Sidebar Navigation -->
-    <div class="flex">
-        <div class="sidebar w-64 text-white p-6 shadow-lg">
-            <div class="flex items-center mb-8">
-                <span class="logo-icon">📦</span>
-				<h1 class="text-4xl font-semibold text-[#ffffff]">boîte</h1>
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-header">
+                <!-- Cornucopia SVG Logo -->
+                <svg class="cornucopia-logo" viewBox="0 0 48 48" fill="none">
+                    <ellipse cx="32" cy="32" rx="13" ry="10" fill="#f7b267"/>
+                    <ellipse cx="32" cy="32" rx="10" ry="7" fill="#fffbe6"/>
+                    <path d="M12 36 Q20 20, 36 16 Q44 18, 44 32 Q44 44, 32 44 Q18 44, 12 36 Z" fill="#f7b267" stroke="#17643a" stroke-width="2"/>
+                    <ellipse cx="18" cy="30" rx="3" ry="2" fill="#4caf50"/>
+                    <ellipse cx="26" cy="36" rx="2" ry="1.3" fill="#f44336"/>
+                    <ellipse cx="38" cy="36" rx="2.3" ry="1.5" fill="#ffeb3b"/>
+                    <ellipse cx="30" cy="28" rx="2" ry="1.5" fill="#81c784"/>
+                </svg>
+                <span class="app-title">Cornucopia</span>
             </div>
-            <nav class="space-y-4">
-                <a href="/admin/adminHome" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
-                    <span class="mr-3 stat-icon">📊</span>
-                    <span class="sidebar-text">Dashboard</span>
+            <div class="nav-section">
+                <a href="/admin/adminHome" class="nav-link">
+                    <span class="nav-icon">📊</span> Dashboard
                 </a>
-                <a href="/admin/purchase" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
-                    <span class="mr-3 stat-icon">💵</span>
-                    <span class="sidebar-text">Make Purchase</span>
+                <a href="/admin/statistics" class="nav-link">
+                    <span class="nav-icon">📈</span> Statistics
                 </a>
-                <a href="/admin/products" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors active">
-                    <span class="mr-3 stat-icon">📦</span>
-                    <span class="sidebar-text">View All Products</span>
+                <a href="/admin/purchase" class="nav-link">
+                    <span class="nav-icon">🛒</span> Make Purchase
                 </a>
-                <a href="/admin/invoices" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
-                    <span class="mr-3 stat-icon">📜</span>
-                    <span class="sidebar-text">View Invoices</span>
+                <a href="/admin/products" class="nav-link active">
+                    <span class="nav-icon">📦</span> All Products
                 </a>
-                <a href="/admin/vendor" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
-                    <span class="mr-3 stat-icon">👥</span>
-                    <span class="sidebar-text">Vendors</span>
+                <a href="/admin/invoices" class="nav-link">
+                    <span class="nav-icon">📜</span> Invoices
                 </a>
-                <div class="divider"></div>
-                <a href="/logout" class="flex items-center p-3 rounded-lg hover:bg-[#14532d] transition-colors">
-                    <span class="mr-3 stat-icon">🚪</span>
-                    <span class="sidebar-text">Logout</span>
+                <a href="/admin/vendor" class="nav-link">
+                    <span class="nav-icon">👥</span> Vendors
                 </a>
-            </nav>
-        </div>
-
-        <!-- Header -->
-        <div class="header">
-            <div class="app-name">View All Products</div>
-            <div class="user-info">
-                <span>Admin</span>
-                <div class="user-avatar">A</div>
             </div>
+            <div class="divider"></div>
         </div>
+        <div>
+            <a href="/logout" class="logout-link">
+                <span class="nav-icon">🚪</span> Logout
+            </a>
+        </div>
+    </div>
 
-        <!-- Main Content -->
-        <div class="main-content flex-1 p-8 pt-24">
-            <div class="max-w-6xl mx-auto">
-                <div class="container">
-                    <h1>Product List</h1>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Description</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="product : ${products}">
-                                <form th:action="@{'/admin/products/update/' + ${product.id}}" method="post">
-                                    <td>
-                                        <input type="text" name="name" th:value="${product.name}" required />
-                                    </td>
-                                    <td>
-                                        <input type="text" name="description" th:value="${product.description}" required />
-                                    </td>
-                                    <td th:text="${product.quantity}">Qty</td>
-                                    <td th:text="${product.price}">Price</td>
-                                    <td>
-                                        <button type="submit" class="edit-btn">Save</button>
-                                    </td>
-                                </form>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">All Products</div>
+        <div class="user-info">
+            <span>Admin User</span>
+            <div class="user-avatar">AU</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="welcome-header">Product Inventory</h1>
+        <div class="welcome-sub">Manage and edit your products below.</div>
+        <div class="products-grid">
+            <div th:each="product : ${products}" class="product-card">
+                <!-- Stock Flag -->
+                <div th:if="${product.quantity == 0}"
+                     class="stock-flag flag-out">Out of Stock</div>
+                <div th:if="${product.quantity > 0 and product.quantity < 10}"
+                     class="stock-flag flag-critical"
+                     th:text="'Only ' + ${product.quantity} + ' left!'"></div>
+                <div th:if="${product.quantity >= 10 and product.quantity < 50}"
+                     class="stock-flag flag-low">Low in Stock</div>
+                <div th:if="${product.quantity >= 50}"
+                     class="stock-flag flag-normal">In Stock</div>
+                <form th:action="@{'/admin/products/update/' + ${product.id}}" method="post" autocomplete="off">
+                    <div class="product-title-row">
+                        <div class="product-icon">📦</div>
+                        <input th:id="'name-' + ${product.id}"
+                               th:name="name"
+                               th:value="${product.name}"
+                               type="text"
+                               class="product-name"
+                               readonly
+                               required
+                               style="background:transparent;border:none;padding:0;width:auto;outline:none;" />
+                    </div>
+                    <div class="product-fields">
+                        <label class="product-label" for="desc">Description</label>
+						<textarea th:id="'desc-' + ${product.id}"
+						          th:name="description"
+						          th:text="${product.description}"
+						          class="product-desc"
+						          readonly
+						          required
+						          style="background:transparent;border:none;padding:0;width:100%;outline:none;resize:none;overflow:auto;"
+						          rows="3"></textarea>
+                        <div>
+                            <span class="product-label">Quantity:</span>
+                            <span class="product-value" th:text="${product.quantity}"></span>
+                        </div>
+                        <div>
+                            <span class="product-label">Unit Price:</span>
+                            <span class="product-value" th:text="'₹' + ${product.price}"></span>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button type="button"
+                                th:id="'edit-btn-' + ${product.id}"
+                                class="action-btn edit"
+                                th:onclick="'enableEdit(' + ${product.id} + ')'"
+                                th:if="${product.quantity >= 0}">
+                            Edit
+                        </button>
+                        <button type="submit"
+                                th:id="'save-btn-' + ${product.id}"
+                                class="action-btn save"
+                                style="display:none;"
+th:onclick="'setTimeout(() => disableEdit(' + ${product.id} + '), 100)'">
+                            Save
+                        </button>
+
+
+                    </div>
+                </form>
+            </div>
+            <div th:if="${#lists.isEmpty(products)}" style="grid-column: 1 / -1; text-align: center; color: #999;">
+                No products found.
             </div>
         </div>
     </div>
