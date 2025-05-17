@@ -1,5 +1,7 @@
 package com.client.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.client.dto.LoginResponseDTO;
 import com.client.model.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -64,52 +65,35 @@ public class CentralClientController {
         HttpEntity<User> request = new HttpEntity<>(user, headers);
 
         try {
-            ResponseEntity<LoginResponseDTO> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                request,
-                LoginResponseDTO.class
-            );
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                LoginResponseDTO loginResponse = response.getBody();
+                Map<String, Object> body = response.getBody();
 
-                // Creating a lightweight session user object
-                User sessionUser = new User();
-                sessionUser.setName(loginResponse.getName());
-                sessionUser.setEmail(loginResponse.getEmail());
-                sessionUser.setId(loginResponse.getId());
+                session.setAttribute("token", body.get("token")); // Store token
+                session.setAttribute("userId", body.get("id"));
+                session.setAttribute("email", body.get("email"));
+                session.setAttribute("role", body.get("role"));
+                session.setAttribute("name", body.get("name"));
 
-                String role = loginResponse.getRole();
-
-                if ("ADMIN".equalsIgnoreCase(role)) {
-                    session.setAttribute("admin", sessionUser);
+                if ("ADMIN".equalsIgnoreCase((String) body.get("role"))) {
                     return "redirect:/admin/adminHome";
-                } else if ("USER".equalsIgnoreCase(role)) {
-                    session.setAttribute("loggedInUser", sessionUser);
+                } else {
                     return "redirect:/user/userHome";
                 }
-            } else {
-                model.addAttribute("error", "Invalid credentials");
             }
-
         } catch (HttpClientErrorException e) {
             model.addAttribute("error", "Login failed: " + e.getStatusCode());
-        } catch (Exception e) {
-            model.addAttribute("error", "Unexpected error occurred");
         }
 
-        return "login"; // return to login page with error
+        return "login";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        String url = BASE_URL + "/logout";
-        try {
-            restTemplate.postForEntity(url, null, String.class);
-        } catch (Exception e) {
-            // Ignore errors; session will still be invalidated locally
-        }
+        // Remove JWT-related data from session
+        session.removeAttribute("jwtToken");
+        session.removeAttribute("loggedInUser");
 
         session.invalidate();
         return "redirect:/login";

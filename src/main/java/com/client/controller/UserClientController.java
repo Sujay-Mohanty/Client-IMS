@@ -35,14 +35,16 @@ public class UserClientController {
 
     @GetMapping("/products")
     public String viewAllProducts(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
-
-        if (user == null) return "redirect:/login";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<List<Product>> response = restTemplate.exchange(
                 BASE_URL + "/products",
                 HttpMethod.GET,
-                new HttpEntity<>(createHeaders(user)),
+                requestEntity,
 
                 new ParameterizedTypeReference<List<Product>>() {}
         );
@@ -57,24 +59,25 @@ public class UserClientController {
 
     @GetMapping("/userHome")
     public String userHome(HttpSession session, Model model) {
-    	return "userHome";
-//        User user = (User) session.getAttribute("loggedInUser");
-//
-//        if (user == null) return "redirect:/login";
-//
-//        ResponseEntity<User> response = restTemplate.exchange(
-//                BASE_URL + "/userHome",
-//                HttpMethod.GET,
-//                new HttpEntity<>(createHeaders(user)),
-//                User.class
-//        );
-//
-//        if (response.getStatusCode() == HttpStatus.OK) {
-//            model.addAttribute("user", response.getBody());
-//            return "userHome";
-//        }
-//
-//        return "error";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<User> response = restTemplate.exchange(
+                BASE_URL + "/userHome",
+                HttpMethod.GET,
+                requestEntity,
+                User.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            model.addAttribute("user", response.getBody());
+            return "userHome";
+        }
+
+        return "error";
     }
 
     @PostMapping("/cart/add/{productId}")
@@ -83,11 +86,14 @@ public class UserClientController {
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
 
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
         try {
-            HttpEntity<?> requestEntity = new HttpEntity<>(createHeaders(user));
+            
             ResponseEntity<String> response = restTemplate.exchange(
                     BASE_URL + "/cart/add/" + productId + "?quantity=" + quantity,
                     HttpMethod.POST,
@@ -104,13 +110,16 @@ public class UserClientController {
 
     @GetMapping("/cart")
     public String viewCart(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 BASE_URL + "/cart",
                 HttpMethod.GET,
-                new HttpEntity<>(createHeaders(user)),
+                requestEntity,
                 new ParameterizedTypeReference<>() {}
         );
 
@@ -126,13 +135,16 @@ public class UserClientController {
 
     @PostMapping("/cart/placeOrder")
     public String placeOrder(HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
         restTemplate.exchange(
                 BASE_URL + "/cart/orders",
                 HttpMethod.GET,
-                new HttpEntity<>(createHeaders(user)),
+                requestEntity,
                 String.class
         );
 
@@ -141,13 +153,16 @@ public class UserClientController {
 
     @GetMapping("/orders")
     public String viewUserOrders(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
                 BASE_URL + "/orders",
                 HttpMethod.GET,
-                new HttpEntity<>(createHeaders(user)),
+                requestEntity,
                 new ParameterizedTypeReference<>() {}
         );
 
@@ -159,10 +174,10 @@ public class UserClientController {
 
         return "error";
     }
-    private HttpHeaders createHeaders(User user) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-User-Email", user.getEmail());  // 👈 Custom header
-        return headers;
-    }
+//    private HttpHeaders createHeaders(User user, HttpSession session) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.set("Authorization", "Bearer " + session.getAttribute("token")); // 👈 Custom header
+//        return headers;
+//    }
 }

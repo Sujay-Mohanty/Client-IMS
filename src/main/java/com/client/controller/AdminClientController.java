@@ -30,6 +30,8 @@ import com.client.dto.VendorProductDTO;
 import com.client.model.Product;
 import com.client.model.Vendor;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminClientController {
@@ -41,33 +43,61 @@ public class AdminClientController {
 
 	// Admin Home
 	@GetMapping("/adminHome")
-	public String adminHome() {
+	public String adminHome(HttpSession session) {
+		String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
+        
+        
 		return "adminHome";
 	}
 
 	// Vendor Section
 	@GetMapping("/vendor")
-	public String vendorPage() {
+	public String vendorPage(HttpSession session) {
+		String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
+        
 		return "vendor";
 	}
 
 	@GetMapping("/vendor/add")
-	public String addVendorForm(Model model) {
+	public String addVendorForm(Model model,HttpSession session) {
+		String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
 		model.addAttribute("vendorproductDTO", new VendorProductDTO());
 		return "vendorAdd";
 	}
 
 	@PostMapping("/vendor/add/save")
-	public String saveVendor(@ModelAttribute VendorProductDTO vpDTO, RedirectAttributes redirectAttributes) {
+	public String saveVendor(@ModelAttribute VendorProductDTO vpDTO, RedirectAttributes redirectAttributes,HttpSession session) {
+		String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+//        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
+        
 		String url = apiBaseUrl + "/vendor/add/save";
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON); // if you're using form-data, else JSON
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_JSON); // if you're using form-data, else JSON
 
 		// Using postForEntity with DTO object, assuming your REST controller accepts
 		// VendorProductDTO as @ModelAttribute or @RequestBody
 		try {
-			HttpEntity<VendorProductDTO> request = new HttpEntity<>(vpDTO);
+			HttpEntity<VendorProductDTO> request = new HttpEntity<>(vpDTO,headers);
 			restTemplate.postForEntity(url, request, String.class);
 			redirectAttributes.addFlashAttribute("success", "Vendor and Product added successfully.");
 		} catch (Exception e) {
@@ -93,13 +123,19 @@ public class AdminClientController {
 
 	// METHOD 2
 	@GetMapping("/vendor/view")
-	public String viewVendors(Model model) {
+	public String viewVendors(Model model,HttpSession session) {
+		String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+//        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
 		String url = apiBaseUrl + "/vendor/view";
 
 		// Step 1: Create headers
-		HttpHeaders headers = new HttpHeaders();
+//		HttpHeaders headers = new HttpHeaders();
 //        headers.set("Accept", "application/json"); // optional: sets Accept header
-		headers.setContentType(MediaType.APPLICATION_JSON);
+//		headers.setContentType(MediaType.APPLICATION_JSON);
 		// headers.set("Authorization", "Bearer your_token_here"); // if auth is needed
 
 		// Step 2: Wrap headers in HttpEntity (no request body for GET)
@@ -132,7 +168,13 @@ public class AdminClientController {
 	}
 	
     @PostMapping("/vendor/delete/{id}")
-    public String deleteVendor(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteVendor(@PathVariable Long id, RedirectAttributes redirectAttributes,HttpSession session) {
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
         String url = apiBaseUrl + "/vendor/delete/" + id;
         try {
             restTemplate.postForLocation(url, null);
@@ -145,9 +187,18 @@ public class AdminClientController {
     
     // Purchase Section
     @GetMapping("/purchase")
-    public String showPurchaseForm(Model model) {
+    public String showPurchaseForm(Model model,HttpSession session) {	
+    	String token = (String) session.getAttribute("token");
+    if (token == null) return "redirect:/login";
+    HttpHeaders headers = new HttpHeaders();
+    
+    
+    headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+    HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    
+    
         String url = apiBaseUrl + "/vendor/view";
-        ResponseEntity<Vendor[]> response = restTemplate.getForEntity(url, Vendor[].class);
+        ResponseEntity<Vendor[]> response = restTemplate.getForEntity(url, Vendor[].class,requestEntity);
         model.addAttribute("vendors", Arrays.asList(Objects.requireNonNullElse(response.getBody(), new Vendor[0])));
         return "purchaseOrder";
     }
@@ -156,7 +207,14 @@ public class AdminClientController {
     public String submitPurchaseOrder(@RequestParam Long vendorId,
                                       @RequestParam int quantity,
                                       @RequestParam double price,
-                                      RedirectAttributes redirectAttributes) {
+                                      RedirectAttributes redirectAttributes,HttpSession session) {
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
+        
         String url = apiBaseUrl + "/purchase/add";
 
         PurchaseOrderRequestDTO request = new PurchaseOrderRequestDTO();
@@ -165,7 +223,7 @@ public class AdminClientController {
         request.setPrice(price);
 
         try {
-            restTemplate.postForLocation(url, request); // sends as JSON by default with Jackson
+            restTemplate.postForLocation(url, request,requestEntity); // sends as JSON by default with Jackson
             redirectAttributes.addFlashAttribute("success", "Purchase order submitted.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to submit purchase order.");
@@ -176,9 +234,15 @@ public class AdminClientController {
     
     // Products
     @GetMapping("/products")
-    public String viewAllProducts(Model model) {
+    public String viewAllProducts(Model model,HttpSession session) {
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
         String url = apiBaseUrl + "/products";
-        ResponseEntity<Product[]> response = restTemplate.getForEntity(url, Product[].class);
+        ResponseEntity<Product[]> response = restTemplate.getForEntity(url, Product[].class,requestEntity);
         model.addAttribute("products", Arrays.asList(Objects.requireNonNullElse(response.getBody(), new Product[0])));
         return "viewProducts";
     }
@@ -187,7 +251,13 @@ public class AdminClientController {
     public String updateProduct(@PathVariable Long id,
                                 @RequestParam String name,
                                 @RequestParam String description,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,HttpSession session) {
+    	String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+//        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
         String url = apiBaseUrl + "/products/update/" + id;
 
         ProductUpdateRequestDTO request = new ProductUpdateRequestDTO();
@@ -197,8 +267,8 @@ public class AdminClientController {
         System.out.println(description);
         System.out.println("HEHE");
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<ProductUpdateRequestDTO> entity = new HttpEntity<>(request, headers);
 
             restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
@@ -212,24 +282,35 @@ public class AdminClientController {
     }
     
     @GetMapping("/invoices")
-    public String getAllInvoices(Model model) {
-        return fetchAndLoadInvoices(model, "all");
+    public String getAllInvoices(Model model,HttpSession session) {
+    	
+        return fetchAndLoadInvoices(model, "all",session);
     }
 
     @GetMapping("/invoices/sales")
-    public String getSalesInvoices(Model model) {
-        return fetchAndLoadInvoices(model, "SALES");
+    public String getSalesInvoices(Model model,HttpSession session) {
+
+        
+        return fetchAndLoadInvoices(model, "SALES",session);
     }
 
     @GetMapping("/invoices/purchase")
-    public String getPurchaseInvoices(Model model) {
-        return fetchAndLoadInvoices(model, "PURCHASE");
+    public String getPurchaseInvoices(Model model,HttpSession session) {
+
+        
+        return fetchAndLoadInvoices(model, "PURCHASE",session);
     }
 
-    private String fetchAndLoadInvoices(Model model, String type) {
+    private String fetchAndLoadInvoices(Model model, String type,HttpSession session) {
         String url = apiBaseUrl + "/invoices";
-
+        String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
         HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token); // 🔑 Send JWT token
+//        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+        
+        
+//        HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
